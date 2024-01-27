@@ -21,7 +21,7 @@
           <a target="_blank" href="https://github.com/xianhao6677/heimahr">
             <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
+          <a target="_blank" @click.prevent="updatePassword">
             <el-dropdown-item>修改密码</el-dropdown-item>
           </a>
           <!-- native: 事件修饰符，注册该组件的根元素的原生事件 -->
@@ -32,6 +32,25 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <!-- dialog弹层组件 -->
+    <el-dialog width="500px" title="修改密码" :visible.sync="showDialog" @close="btnCancel">
+      <!-- 放置表单 -->
+      <el-form ref="passForm" :model="passForm" :rules="rules" label-width="120px">
+        <el-form-item label="旧密码" prop="oldPassword">
+          <el-input v-model="passForm.oldPassword" show-password size="small" />
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="passForm.newPassword" show-password size="small" />
+        </el-form-item>
+        <el-form-item label="重复密码" prop="confirmPassword">
+          <el-input v-model="passForm.confirmPassword" show-password size="small" />
+        </el-form-item>
+        <el-form-item>
+          <el-button size="mini" type="primary" @click="btnOK">确认修改</el-button>
+          <el-button size="mini" @click="btnCancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
@@ -40,11 +59,54 @@ import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 import { Message } from 'element-ui'
+import { updatePassword } from '@/api/user'
 
 export default {
   components: {
     Breadcrumb,
     Hamburger
+  },
+  data() {
+    return {
+      showDialog: true,
+      passForm: {
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: ''
+      },
+      rules: {
+        oldPassword: [
+          { required: true, message: '请输入旧密码', trigger: 'blur' }
+        ],
+        newPassword: [
+          { required: true, message: '请输入新密码', trigger: 'blur' },
+          { min: 6, max: 16, message: '请输入6-16位新密码', trigger: 'blur' },
+          {
+            validator: (rule, value, callback) => {
+              if (value === this.passForm.oldPassword) {
+                callback(new Error('新密码不能与旧密码相同'))
+              } else {
+                callback()
+              }
+            },
+            trigger: 'blur'
+          }
+        ],
+        confirmPassword: [
+          { required: true, message: '请重复新密码', trigger: 'blur' },
+          {
+            validator: (rule, value, callback) => {
+              if (value === this.passForm.newPassword) {
+                callback()
+              } else {
+                callback(new Error('重复密码和新密码不一致'))
+              }
+            },
+            trigger: 'blur'
+          }
+        ]
+      }
+    }
   },
   computed: {
     ...mapGetters([
@@ -54,9 +116,14 @@ export default {
     ])
   },
   methods: {
+    // 点击修改密码逻辑
+    updatePassword() {
+      this.showDialog = true // 显示弹层
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
+    // 点击退出逻辑
     logout() {
       this.$confirm('是否确认退出?', {
         confirmButtonText: '退出',
@@ -67,6 +134,28 @@ export default {
         Message({ type: 'success', message: '退出成功' })
         this.$router.push('/login')
       }).catch(() => {})
+    },
+    // 确认修改密码
+    btnOK() {
+      this.$refs.passForm.validate(async(isOK) => {
+        if (isOK) {
+          // 调用修改密码接口
+          await updatePassword(this.passForm)
+          Message({ type: 'success', message: '修改成功' })
+          // // 重置表单
+          // this.$refs.passForm.resetFields()
+          // // 关闭弹层
+          // this.showDialog = false
+          this.btnCancel()
+        }
+      })
+    },
+    // 取消修改密码
+    btnCancel() {
+      // 重置表单
+      this.$refs.passForm.resetFields()
+      // 关闭弹层
+      this.showDialog = false
     }
   }
 }
