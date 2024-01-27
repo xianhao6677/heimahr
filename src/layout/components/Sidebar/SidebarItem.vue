@@ -1,8 +1,11 @@
 <template>
+  <!-- 判断路由配置中是否设置隐藏，hidden为true则不渲染 -->
+  <!-- 本项目中login、404 路由设置了hidden:true,因此不在左侧菜单栏中显示 -->
   <div v-if="!item.hidden">
     <template v-if="hasOneShowingChild(item.children,item) && (!onlyOneChild.children||onlyOneChild.noShowingChildren)&&!item.alwaysShow">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
         <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{'submenu-title-noDropdown':!isNest}">
+          <!-- 引入自定义item组件，读取并携带路由配置中的meta属性作为参数传递，渲染在左侧菜单栏中 -->
           <item :icon="onlyOneChild.meta.icon||(item.meta&&item.meta.icon)" :title="onlyOneChild.meta.title" />
         </el-menu-item>
       </app-link>
