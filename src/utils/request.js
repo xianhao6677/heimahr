@@ -1,6 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import { Message } from 'element-ui'
+import router from '@/router'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
@@ -31,8 +32,13 @@ service.interceptors.response.use(function(response) {
     return Promise.reject(new Error(message))
   }
 }, function(error) {
-  // 超出 2xx 范围的状态码都会触发该函数。
-  // 对响应错误做点什么
+  // token 失效
+  if (error.response.status === 401) {
+    Message({ type: 'error', message: '登录超时，请重新登录' })
+    store.dispatch('user/logout') // 调用action中的logout清空信息并退出登录
+    router.push('/') // 跳转到登陆页
+    return Promise.reject(error)
+  }
   Message({ type: 'error', message: error.message })
   return Promise.reject(error)
 })

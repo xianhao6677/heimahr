@@ -13,11 +13,11 @@ const mutations = {
     setToken(token)
   },
   // 退出时清除token
-  removeToken() {
+  removeToken(state) {
     state.token = null
     removeToken()
   },
-  // 保存用户基本资料
+  // 设置用户基本资料
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo
   }
@@ -37,6 +37,11 @@ const actions = {
     const res = await getUserInfo()
     // console.log(res)
     context.commit('setUserInfo', res)
+  },
+  // 退出登录清空信息
+  logout(context) {
+    context.commit('removeToken') // 删除token
+    context.commit('setUserInfo', {}) // 设置用户信息为空对象
   }
 }
 
