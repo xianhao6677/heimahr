@@ -29,37 +29,38 @@
   </div>
 </template>
 <script>
-// import { getDepartment } from '@/api/department'
+import { getDepartment } from '@/api/department'
 
 export default {
   name: 'Department',
   data() {
     return { //  数据属性
-      depts: [{
-        name: '传智教育', managerName: '管理员', children: [{
-          name: '总裁办', managerName: '张三'
-        }, {
-          name: '人事部', managerName: '李四'
-        }, {
-          name: '行政部', managerName: '王五'
-        }]
-      }],
+      depts: [],
+      // depts: [{
+      //   name: '传智教育', managerName: '管理员', children: [{
+      //     name: '总裁办', managerName: '张三'
+      //   }, {
+      //     name: '人事部', managerName: '李四'
+      //   }, {
+      //     name: '行政部', managerName: '王五'
+      //   }]
+      // }],
       defaultProps: {
         label: 'name', // 显示的字段名称
         children: 'children' // 读取子节点的字段名称
       }
     }
   },
-  // created() {
-  //   this.getDepartment()
-  // },
+  created() {
+    this.getDepartment()
+  },
   methods: {
     // 获取部门列表
-    // async getDepartment() {
-    //   const res = await getDepartment()
-    //   // console.log(res)
-    //   this.depts = res
-    // }
+    async getDepartment() {
+      const res = await getDepartment()
+      // console.log(res)
+      this.depts = res
+    }
   }
 }
 </script>
@@ -72,6 +73,6 @@ export default {
 .tree-manager {
   display: inline-block;
   width: 50px;
-  margin: 10px;
+  margin: 30px;
 }
 </style>
