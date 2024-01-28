@@ -30,6 +30,7 @@
 </template>
 <script>
 import { getDepartment } from '@/api/department'
+import { transListToTreeData } from '@/utils'
 
 export default {
   name: 'Department',
@@ -55,11 +56,12 @@ export default {
     this.getDepartment()
   },
   methods: {
-    // 获取部门列表
+    // 获取部门列表数据
     async getDepartment() {
       const res = await getDepartment()
       // console.log(res)
-      this.depts = res
+      // 调用封装好的递归函数，将列表型数据转换成树形结构的数据
+      this.depts = transListToTreeData(res, 0)
     }
   }
 }

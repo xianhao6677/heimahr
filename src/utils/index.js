@@ -115,3 +115,21 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+// 列表型数据转化为树形结构的数据 -> 封装递归函数
+// rootValue参数为最顶层的根节点，从 0 开始
+export const transListToTreeData = (list, rootValue) => {
+  const arr = []
+  list.forEach(item => {
+    if (item.pid === rootValue) {
+      // 找到当前层级匹配的根节点，加入数组
+      arr.push(item)
+      // 已知返回的数据中，每个当前节点的id 与 子节点的pid 相等
+      // 继续遍历数组，寻找子节点的再下一级节点
+      const children = transListToTreeData(list, item.id)
+      // 将子节点赋值给当前节点的chileren属性，用于树形结构识别分级
+      item.children = children
+    }
+  })
+  return arr
+}
