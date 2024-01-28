@@ -1,21 +1,21 @@
 <template>
   <el-dialog :title="title" :visible="showDialog" @close="close">
-    <el-form label-width="120px">
-      <el-form-item label="部门名称">
-        <el-input style="width: 80%;" size="mini" placeholder="2-10个字符" />
+    <el-form ref="addDept" :model="formData" :rules="rules" label-width="120px">
+      <el-form-item label="部门名称" prop="name">
+        <el-input v-model="formData.name" style="width: 80%;" size="mini" placeholder="2-10个字符" />
       </el-form-item>
-      <el-form-item label="部门编码">
-        <el-input style="width: 80%;" size="mini" placeholder="2-10个字符" />
+      <el-form-item label="部门编码" prop="code">
+        <el-input v-model="formData.code" style="width: 80%;" size="mini" placeholder="2-10个字符" />
       </el-form-item>
-      <el-form-item label="部门负责人">
-        <el-input style="width: 80%;" size="mini" placeholder="请选择负责人" />
+      <el-form-item label="部门负责人" prop="managerId">
+        <el-select v-model="formData.managerId" style="width: 80%;" size="mini" placeholder="请选择负责人" />
       </el-form-item>
-      <el-form-item label="部门介绍">
-        <el-input type="textarea" :rows="4" style="width: 80%;" size="mini" placeholder="1-100个字符" />
+      <el-form-item label="部门介绍" prop="introduce">
+        <el-input v-model="formData.introduce" type="textarea" :rows="4" style="width: 80%;" size="mini" placeholder="1-100个字符" />
       </el-form-item>
       <el-form-item>
         <el-row type="flex" justify="center">
-          <el-col span="12">
+          <el-col :span="12">
             <el-button type="primary" size="small">确认</el-button>
             <el-button size="small">取消</el-button>
           </el-col>
@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { getDepartment } from '@/api/department'
+
 export default {
   props: {
     title: {
@@ -35,6 +37,53 @@ export default {
     showDialog: {
       type: Boolean,
       default: true
+    }
+  },
+  data() {
+    return {
+      formData: {
+        name: '',
+        code: '',
+        managerId: '',
+        introduce: '',
+        pid: ''
+      },
+      rules: {
+        name: [
+          { required: true, message: '部门名称不能为空', trigger: 'blur' },
+          { min: 2, max: 10, message: '部门名称的长度为2-10个字符', trigger: 'blur' },
+          {
+            validator: async(rule, value, callback) => {
+              const res = await getDepartment()
+              if (res.some(item => item.name === value)) {
+                callback(new Error('部门中已经有该名称了'))
+              } else {
+                callback()
+              }
+            }, trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '部门编码不能为空', trigger: 'blur' },
+          { min: 2, max: 10, message: '部门编码的长度为2-10个字符', trigger: 'blur' },
+          {
+            validator: async(rule, value, callback) => {
+              const res = await getDepartment()
+              if (res.some(item => item.code === value)) {
+                callback(new Error('部门中已经有该编码了'))
+              } else {
+                callback()
+              }
+            }, trigger: 'blur' }
+        ],
+        managerId: [
+          { required: true, message: '部门负责人不能为空', trigger: 'blur' }
+        ],
+        introduce: [
+          { required: true, message: '部门介绍不能为空', trigger: 'blur' },
+          { min: 1, max: 100, message: '部门介绍的长度为1-100个字符', trigger: 'blur' }
+        ]
+        // pid: []
+      }
     }
   },
   methods: {
