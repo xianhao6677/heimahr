@@ -16,7 +16,7 @@
                   操作<i class="el-icon-arrow-down el-icon--right" />
                 </span>
                 <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item command="add">添加权限</el-dropdown-item>
+                  <el-dropdown-item command="add">添加子部门</el-dropdown-item>
                   <el-dropdown-item command="edit">编辑部门</el-dropdown-item>
                   <el-dropdown-item command="del">删除</el-dropdown-item>
                 </el-dropdown-menu>
@@ -28,7 +28,7 @@
     </div>
     <!-- .sync事件修饰符：自动绑定 @update: showDialog事件 -->
     <!-- 子组件提交同名触发函数(update: showDialog),传递过来值自动赋予父组件绑定的变量 -->
-    <add-dept :show-dialog.sync="showDialog" />
+    <add-dept :show-dialog.sync="showDialog" :title="title" />
   </div>
 </template>
 <script>
@@ -43,6 +43,7 @@ export default {
   },
   data() {
     return {
+      title: '',
       showDialog: false,
       depts: [], //  数据属性
       defaultProps: {
@@ -67,9 +68,12 @@ export default {
       if (type === 'add') {
         // 添加子部门
         this.showDialog = true
+        this.title = '新增部门'
       }
       if (type === 'edit') {
         // 编辑子部门
+        this.showDialog = true
+        this.title = '编辑部门'
       }
       if (type === 'del') {
         // 删除子部门
