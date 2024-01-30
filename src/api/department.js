@@ -38,3 +38,11 @@ export const updateDepartment = (data) => {
     data
   })
 }
+
+// 删除部门
+export const deleteDepartment = (id) => {
+  return request({
+    url: `/company/department/${id}`,
+    method: 'delete'
+  })
+}
