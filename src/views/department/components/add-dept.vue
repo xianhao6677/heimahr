@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { addDepartment, getDepartment, getManagerList } from '@/api/department'
+import { addDepartment, getDepartment, getDepartmentDetail, getManagerList } from '@/api/department'
 
 export default {
   props: {
@@ -112,7 +112,6 @@ export default {
     btnOK() {
       this.$refs.addDept.validate(async(isOK) => {
         if (isOK) {
-          // console.log(1)
           // 校验通过-> 调用新增部门接口
           await addDepartment({ ...this.formData, pid: this.currentNodeId })
           // 通知父组件重新发送请求，更新部门列表
@@ -122,6 +121,10 @@ export default {
           this.close()
         }
       })
+    },
+    // 获取当前弹层的部门详情数据
+    async getDepartmentDetail() {
+      this.formData = await getDepartmentDetail(this.currentNodeId)
     }
   }
 }
