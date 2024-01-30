@@ -2,7 +2,7 @@
   <div class="container">
     <div class="app-container">
       <div class="role-operate">
-        <el-button type="primary" size="small">添加角色</el-button>
+        <el-button type="primary" size="small" @click="showDialog=true">添加角色</el-button>
       </div>
       <el-table :data="list" :border="true">
         <!-- <el-table-column label="序号" align="center" /> -->
@@ -33,6 +33,33 @@
         />
       </el-row>
     </div>
+    <!-- 添加角色弹层 -->
+    <el-dialog title="新增角色" :visible.sync="showDialog">
+      <!-- 表单内容 -->
+      <el-form label-width="120px">
+        <el-form-item label="角色名称">
+          <el-input size="mini" style="width: 300px;" />
+        </el-form-item>
+        <el-form-item label="启用">
+          <el-switch
+            v-model="switchValue"
+            active-color="#13ce66"
+            inactive-color="#ff4949"
+          >/>
+          </el-switch></el-form-item>
+        <el-form-item label="角色描述">
+          <el-input size="mini" style="width: 300px;" type="textarea" :rows="3" />
+        </el-form-item>
+        <el-form-item>
+          <el-row type="flex" justify="center">
+            <el-col :span="12">
+              <el-button type="primary" size="small">确定</el-button>
+              <el-button size="small">取消</el-button>
+            </el-col>
+          </el-row>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -43,6 +70,8 @@ export default {
   data() {
     return {
       list: [],
+      showDialog: true,
+      switchValue: false,
       // 分页信息
       pageParams: {
         page: 1,
