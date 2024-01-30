@@ -11,7 +11,7 @@
             <el-col :span="4">
               <span class="tree-manager">{{ data.managerName }}</span>
               <!-- 下拉菜单 -->
-              <el-dropdown @command="operate">
+              <el-dropdown @command="operate($event, data.id)">
                 <span class="el-dropdown-link">
                   操作<i class="el-icon-arrow-down el-icon--right" />
                 </span>
@@ -28,7 +28,7 @@
     </div>
     <!-- .sync事件修饰符：自动绑定 @update: showDialog事件 -->
     <!-- 子组件提交同名触发函数(update: showDialog),传递过来值自动赋予父组件绑定的变量 -->
-    <add-dept :show-dialog.sync="showDialog" :title="title" />
+    <add-dept :show-dialog.sync="showDialog" :title="title" :current-node-id="currentNodeId" />
   </div>
 </template>
 <script>
@@ -45,6 +45,7 @@ export default {
     return {
       title: '',
       showDialog: false,
+      currentNodeId: null, // 存储当前点击(添加子部门)项的id，作为子部门的pid
       depts: [], //  数据属性
       defaultProps: {
         label: 'name', // 显示的字段名称
@@ -63,12 +64,14 @@ export default {
       // 调用封装好的递归函数，将列表型数据转换成树形结构的数据
       this.depts = transListToTreeData(res, 0)
     },
-    operate(type) {
+    operate(type, id) {
       // console.log(type)
       if (type === 'add') {
         // 添加子部门
         this.showDialog = true
         this.title = '新增部门'
+        // console.log(type, id)
+        this.currentNodeId = id
       }
       if (type === 'edit') {
         // 编辑子部门
