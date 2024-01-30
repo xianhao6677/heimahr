@@ -22,7 +22,15 @@
         </el-table-column>
       </el-table>
       <el-row type="flex" justify="end" style="height: 60px;" align="middle">
-        <el-pagination layout="prev, pager, next" />
+        <el-pagination
+          layout="prev, pager, next"
+          :page-size="pageParams.pagesize"
+          :current-page="pageParams.page"
+          :total="pageParams.total"
+          @prev-click="prevClick"
+          @next-click="nextClick"
+          @current-change="changePage"
+        />
       </el-row>
     </div>
   </div>
@@ -34,9 +42,13 @@ export default {
   name: 'Role',
   data() {
     return {
-      page: 1,
-      pagesize: 5,
-      list: []
+      list: [],
+      // 分页信息
+      pageParams: {
+        page: 1,
+        pagesize: 5,
+        total: 0
+      }
     }
   },
   created() {
@@ -44,9 +56,32 @@ export default {
   },
   methods: {
     async getRoleList() {
-      const res = await getRoleList()
+      const res = await getRoleList(this.pageParams)
       // console.log(res)
+      this.pageParams.total = res.total
       this.list = res.rows
+    },
+    // 点击上一页
+    prevClick() {
+      // 判断是否为第一页
+      if (this.pageParams.page > 1) {
+        this.pageParams.page--
+        this.getRoleList()
+      }
+    },
+    // 点击下一页
+    nextClick() {
+      // 判断是否为最后一页
+      if (this.pageParams.page < this.pageParams.total / this.pageParams.pagesize) {
+        this.pageParams.page++
+        this.getRoleList()
+      }
+    },
+    // 点击页数切换页码
+    changePage(newPage) {
+      // console.log(e)
+      this.pageParams.page = newPage
+      this.getRoleList()
     }
   }
 }
