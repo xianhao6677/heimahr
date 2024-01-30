@@ -28,7 +28,7 @@
     </div>
     <!-- .sync事件修饰符：自动绑定 @update: showDialog事件 -->
     <!-- 子组件提交同名触发函数(update: showDialog),传递过来值自动赋予父组件绑定的变量 -->
-    <add-dept :show-dialog.sync="showDialog" :title="title" :current-node-id="currentNodeId" />
+    <add-dept :show-dialog.sync="showDialog" :title="title" :current-node-id="currentNodeId" @updateDepartment="getDepartment" />
   </div>
 </template>
 <script>

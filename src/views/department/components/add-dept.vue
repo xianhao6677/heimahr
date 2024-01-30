@@ -19,8 +19,8 @@
       <el-form-item>
         <el-row type="flex" justify="center">
           <el-col :span="12">
-            <el-button type="primary" size="small">确认</el-button>
-            <el-button size="small">取消</el-button>
+            <el-button type="primary" size="small" @click="btnOK">确认</el-button>
+            <el-button size="small" @click="close">取消</el-button>
           </el-col>
         </el-row>
       </el-form-item>
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { getDepartment, getManagerList } from '@/api/department'
+import { addDepartment, getDepartment, getManagerList } from '@/api/department'
 
 export default {
   props: {
@@ -100,11 +100,28 @@ export default {
   methods: {
     // 关闭弹层
     close() {
+      // 先重置表单
+      this.$refs.addDept.resetFields()
       this.$emit('update:show-dialog', false)
     },
     // 获取部门负责人列表
     async getManagerList() {
       this.managerList = await getManagerList()
+    },
+    // 点击确定时进行整个表单校验
+    btnOK() {
+      this.$refs.addDept.validate(async(isOK) => {
+        if (isOK) {
+          // console.log(1)
+          // 校验通过-> 调用新增部门接口
+          await addDepartment({ ...this.formData, pid: this.currentNodeId })
+          // 通知父组件重新发送请求，更新部门列表
+          this.$emit('updateDepartment')
+          this.$message.success('新增部门成功')
+          // 调用关闭弹层函数
+          this.close()
+        }
+      })
     }
   }
 }
