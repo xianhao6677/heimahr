@@ -28,7 +28,7 @@
     </div>
     <!-- .sync事件修饰符：自动绑定 @update: showDialog事件 -->
     <!-- 子组件提交同名触发函数(update: showDialog),传递过来值自动赋予父组件绑定的变量 -->
-    <add-dept ref="addDept" :show-dialog.sync="showDialog" :title="title" :current-node-id="currentNodeId" @updateDepartment="getDepartment" />
+    <add-dept ref="addDept" :show-dialog.sync="showDialog" :current-node-id="currentNodeId" @updateDepartment="getDepartment" />
   </div>
 </template>
 <script>
@@ -43,7 +43,6 @@ export default {
   },
   data() {
     return {
-      title: '',
       showDialog: false,
       currentNodeId: null, // 存储当前点击(添加子部门)项的id，作为子部门的pid
       depts: [], //  数据属性
@@ -69,13 +68,11 @@ export default {
       if (type === 'add') {
         // 添加子部门
         this.showDialog = true
-        this.title = '新增部门'
         // console.log(type, id)
         this.currentNodeId = id // 记录当前点击项的数据 id
       } else if (type === 'edit') {
         // 编辑子部门
         this.showDialog = true
-        this.title = '编辑部门'
         // console.log(this.depts, id)
         this.currentNodeId = id // 记录当前点击项的数据 id
         // 获取当前部门详情

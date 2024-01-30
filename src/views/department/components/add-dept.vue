@@ -1,5 +1,5 @@
 <template>
-  <el-dialog :title="title" :visible="showDialog" @close="close">
+  <el-dialog :title="showTitle" :visible="showDialog" @close="close">
     <el-form ref="addDept" :model="formData" :rules="rules" label-width="120px">
       <el-form-item label="部门名称" prop="name">
         <el-input v-model="formData.name" style="width: 80%;" size="mini" placeholder="2-10个字符" />
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { addDepartment, getDepartment, getDepartmentDetail, getManagerList } from '@/api/department'
+import { addDepartment, getDepartment, getDepartmentDetail, getManagerList, updateDepartment } from '@/api/department'
 
 export default {
   props: {
@@ -94,12 +94,25 @@ export default {
       }
     }
   },
+  computed: {
+    showTitle() {
+      return this.formData.id ? '编辑部门' : '新增部门'
+    }
+  },
   created() {
     this.getManagerList()
   },
   methods: {
     // 关闭弹层
     close() {
+      // 重置表单操作取法重置不在表单中显示的id数据，需手动重置id为空
+      this.formData = { // 表单数据
+        name: '',
+        code: '',
+        managerId: '',
+        introduce: '',
+        pid: ''
+      }
       // 先重置表单
       this.$refs.addDept.resetFields()
       this.$emit('update:show-dialog', false)
@@ -111,18 +124,28 @@ export default {
     // 点击确定时进行整个表单校验
     btnOK() {
       this.$refs.addDept.validate(async(isOK) => {
-        if (isOK) {
-          // 校验通过-> 调用新增部门接口
-          await addDepartment({ ...this.formData, pid: this.currentNodeId })
+        if (isOK) { // 校验通过
+          let msg = '新增'
+          if (this.formData.id) { // 有id
+            // 执行编辑操作
+            // 调用修改部门详情接口
+            msg = '修改'
+            await updateDepartment(this.formData)
+            this.$message.success(`${msg}部门成功`)
+          } else {
+            // 执行新增操作
+            // 调用新增部门接口
+            await addDepartment({ ...this.formData, pid: this.currentNodeId })
+          }
           // 通知父组件重新发送请求，更新部门列表
           this.$emit('updateDepartment')
-          this.$message.success('新增部门成功')
+          this.$message.success(`${msg}部门成功`)
           // 调用关闭弹层函数
           this.close()
         }
       })
     },
-    // 获取当前弹层的部门详情数据
+    // 获取当前弹层的部门详情数据，进行表单回填
     async getDepartmentDetail() {
       this.formData = await getDepartmentDetail(this.currentNodeId)
     }
