@@ -5,7 +5,7 @@ import router from '@/router'
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
-  timeout: 10000
+  timeout: 50000
 })
 
 // 添加请求拦截器
@@ -22,8 +22,9 @@ service.interceptors.request.use(function(config) {
 
 // 添加响应拦截器
 service.interceptors.response.use(function(response) {
-  // 2xx 范围内的状态码都会触发该函数。
-  // 对响应数据做点什么
+  // 判断是否为blob二进制文件流格式的数据
+  if (response.data instanceof Blob) return response.data
+  // 非blob二进制文件流，默认为JSON格式
   const { data, message, success } = response.data
   if (success) {
     return data
