@@ -51,7 +51,15 @@
         </el-table>
         <!-- 分页 -->
         <el-row type="flex" justify="end" style="height: 60px;" align="middle">
-          <el-pagination layout="total,prev, pager, next" :total="1000" />
+          <el-pagination
+            layout="total,prev, pager, next"
+            :total="total"
+            :current-page="queryParams.page"
+            :page-sizes="queryParams.pagesize"
+            @current-change="changePage"
+            @prev-click="prevClick"
+            @next-click="nextClick"
+          />
         </el-row>
       </div>
     </div>
@@ -73,10 +81,11 @@ export default {
       },
       queryParams: { // 请求获取员工列表的查询参数
         departmentId: null,
-        page: 1,
+        page: 1, // 当前页码
         pagesize: 10
       },
-      list: [] // 员工列表数据
+      list: [], // 员工列表数据
+      total: 0 // 员工列表总条数
     }
   },
   created() {
@@ -99,18 +108,38 @@ export default {
       })
       this.getEmployeeList()
     },
-    // 获取点击选中的节点数据
+    // 切换部门节点 -> 获取点击选中的节点数据
     selsctNode(node) {
       // console.log(e)
-      // 重新记录当前选中的节点id，用户后续接口获取数据
+      // 重新记录当前选中的节点id，用于后续接口获取数据
       this.queryParams.departmentId = node.id
+      this.queryParams.page = 1 // 设置第一页
       this.getEmployeeList()
     },
     // 获取员工列表接口
     async getEmployeeList() {
-      const { rows } = await getEmployeeList(this.queryParams)
-      // console.log(res)
+      const { rows, total } = await getEmployeeList(this.queryParams)
       this.list = rows
+      this.total = total
+    },
+    // 切换页数
+    changePage(newPage) {
+      // console.log(e)
+      this.queryParams.page = newPage
+      this.getEmployeeList()
+    },
+    // 上一页
+    prevClick() {
+      if (this.queryParams.page > 1) {
+        this.queryParams.page--
+        this.getEmployeeList()
+      }
+    },
+    // 下一页
+    nextClick() {
+      if (this.queryParams.page < this.total / this.queryParams.pagesize) {
+        this.getEmployeeList()
+      }
     }
   }
 }
