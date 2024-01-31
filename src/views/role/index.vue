@@ -8,19 +8,19 @@
         <!-- <el-table-column label="序号" align="center" /> -->
         <el-table-column prop="name" label="角色" align="center" width="200">
           <template v-slot="{row}">
-            <el-input v-if="row.isEdit" size="mini" />
+            <el-input v-if="row.isEdit" v-model="row.eidtRow.name" size="mini" />
             <span v-else>{{ row.name }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="state" label="启用" align="center" width="200">
           <template v-slot="{row}">
-            <el-switch v-if="row.isEdit" v-model="row.state" :active-value="1" :inactive-value="0" />
+            <el-switch v-if="row.isEdit" v-model="row.eidtRow.state" :active-value="1" :inactive-value="0" />
             <span v-else>{{ row.state === 1? '已启用': row.state === 0? '未启用' : '无' }}</span>
           </template>
         </el-table-column>
         <el-table-column prop="description" label="描述" align="center">
           <template v-slot="{row}">
-            <el-input v-if="row.isEdit" type="textarea" size="mini" />
+            <el-input v-if="row.isEdit" v-model="row.eidtRow.description" type="textarea" size="mini" />
             <span v-else>{{ row.description }}</span>
           </template>
         </el-table-column>
@@ -119,6 +119,13 @@ export default {
       this.list.forEach(item => {
         // 自定义添加动态响应式属性，用于标记当前行是否处于标记状态
         this.$set(item, 'isEdit', false)
+        // 自定义添加动态响应式属性，，用于行内编辑时回显
+        // 该缓存属性默认初始值为行内原始数据，编辑修改时不会影响原数据，取消编辑时恢复原数据
+        this.$set(item, 'eidtRow', {
+          name: item.name,
+          description: item.description,
+          state: item.state
+        })
       })
     },
     // 点击上一页
@@ -164,6 +171,10 @@ export default {
     btnEditRow(row) {
       // console.log(row)
       row.isEdit = true
+      // 点击编辑 -> 更新用于修改的缓存数据为初始值
+      row.eidtRow.name = row.name
+      row.eidtRow.state = row.state
+      row.eidtRow.description = row.description
     }
   }
 }
