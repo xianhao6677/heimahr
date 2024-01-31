@@ -2,7 +2,16 @@
   <div class="container">
     <div class="app-container">
       <div class="left">
-        <el-input style="margin-bottom:10px" type="text" prefix-icon="el-icon-search" size="small" placeholder="输入员工姓名全员搜索" />
+        <!-- 模糊搜索输入框 -->
+        <el-input
+          v-model="queryParams.keyword"
+          style="margin-bottom:10px"
+          type="text"
+          prefix-icon="el-icon-search"
+          size="small"
+          placeholder="输入员工姓名全员搜索"
+          @input="changeValue"
+        />
         <!-- 树形组件 -->
         <el-tree
           ref="deptTree"
@@ -55,7 +64,7 @@
             layout="total,prev, pager, next"
             :total="total"
             :current-page="queryParams.page"
-            :page-sizes="queryParams.pagesize"
+            :page-size="queryParams.pagesize"
             @current-change="changePage"
             @prev-click="prevClick"
             @next-click="nextClick"
@@ -82,7 +91,8 @@ export default {
       queryParams: { // 请求获取员工列表的查询参数
         departmentId: null,
         page: 1, // 当前页码
-        pagesize: 10
+        pagesize: 10,
+        keyword: '' // 模糊搜索关键字
       },
       list: [], // 员工列表数据
       total: 0 // 员工列表总条数
@@ -140,6 +150,16 @@ export default {
       if (this.queryParams.page < this.total / this.queryParams.pagesize) {
         this.getEmployeeList()
       }
+    },
+    // 搜索框输入内容发生变化
+    changeValue() {
+      // console.log(this.queryParams.keyword)
+      // 防抖操作，避免频繁发送请求浪费性能
+      clearTimeout(this.timer) // 每次输入值改变时先清理定时器
+      this.timer = setTimeout(() => {
+        this.getEmployeeList()
+        this.queryParams.page = 1
+      }, 500)
     }
   }
 }
