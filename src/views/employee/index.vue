@@ -22,7 +22,26 @@
           <el-button size="mini">excel导出</el-button>
         </el-row>
         <!-- 表格组件 -->
+        <el-table>
+          <el-table-column label="头像" align="center" />
+          <el-table-column label="姓名" />
+          <el-table-column label="手机号" sortable />
+          <el-table-column label="工号" sortable />
+          <el-table-column label="聘用形式" />
+          <el-table-column label="部门" />
+          <el-table-column label="入职时间" sortable />
+          <el-table-column label="操作" width="280px">
+            <template>
+              <el-button size="mini" type="text">查看</el-button>
+              <el-button size="mini" type="text">角色</el-button>
+              <el-button size="mini" type="text">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
         <!-- 分页 -->
+        <el-row type="flex" justify="end" style="height: 60px;" align="middle">
+          <el-pagination layout="total,prev, pager, next" :total="1000" />
+        </el-row>
       </div>
     </div>
   </div>
@@ -59,7 +78,10 @@ export default {
       this.queryParams.departmentId = this.depts[0].id
       // 获取数组件实例，通过内置方法，根据参数(id)设置默认初始选中项
       // el-tree为异步更新，需要在组件渲染完成后再调用内置方法
-      this.$nextTick(() => this.$refs.deptTree.setCurrentKey(this.queryParams.departmentId))
+      this.$nextTick(() => {
+        // 当前选中的节点
+        this.$refs.deptTree.setCurrentKey(this.queryParams.departmentId)
+      })
     },
     // 获取点击选中的节点数据
     selsctNode(node) {
