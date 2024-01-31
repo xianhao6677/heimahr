@@ -22,14 +22,14 @@
           <el-button size="mini">excel导出</el-button>
         </el-row>
         <!-- 表格组件 -->
-        <el-table>
-          <el-table-column label="头像" align="center" />
-          <el-table-column label="姓名" />
-          <el-table-column label="手机号" sortable />
-          <el-table-column label="工号" sortable />
-          <el-table-column label="聘用形式" />
-          <el-table-column label="部门" />
-          <el-table-column label="入职时间" sortable />
+        <el-table :data="list">
+          <el-table-column label="头像" prop="staffPhoto" align="center" />
+          <el-table-column label="姓名" prop="username" />
+          <el-table-column label="手机号" prop="mobile" sortable />
+          <el-table-column label="工号" prop="workNumber" sortable />
+          <el-table-column label="聘用形式" prop="formOfEmployment" />
+          <el-table-column label="部门" prop="departmentName" />
+          <el-table-column label="入职时间" prop="timeOfEntry" sortable />
           <el-table-column label="操作" width="280px">
             <template>
               <el-button size="mini" type="text">查看</el-button>
@@ -50,6 +50,7 @@
 <script>
 import { getDepartment } from '@/api/department'
 import { transListToTreeData } from '@/utils'
+import { getEmployeeList } from '@/api/employee'
 export default {
   name: 'Employee',
   data() {
@@ -60,8 +61,11 @@ export default {
         children: 'children'
       },
       queryParams: { // 请求获取员工列表的查询参数
-        departmentId: null
-      }
+        departmentId: null,
+        page: 1,
+        pagesize: 10
+      },
+      list: [] // 员工列表数据
     }
   },
   created() {
@@ -82,12 +86,20 @@ export default {
         // 当前选中的节点
         this.$refs.deptTree.setCurrentKey(this.queryParams.departmentId)
       })
+      this.getEmployeeList()
     },
     // 获取点击选中的节点数据
     selsctNode(node) {
       // console.log(e)
-      // 记录当前选中的节点id，用户后续接口获取数据
+      // 重新记录当前选中的节点id，用户后续接口获取数据
       this.queryParams.departmentId = node.id
+      this.getEmployeeList()
+    },
+    // 获取员工列表接口
+    async getEmployeeList() {
+      const { rows } = await getEmployeeList(this.queryParams)
+      // console.log(res)
+      this.list = rows
     }
   }
 }
