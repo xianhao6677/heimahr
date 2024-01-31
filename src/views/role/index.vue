@@ -36,19 +36,15 @@
     <!-- 添加角色弹层 -->
     <el-dialog title="新增角色" :visible.sync="showDialog">
       <!-- 表单内容 -->
-      <el-form label-width="120px">
-        <el-form-item label="角色名称">
-          <el-input size="mini" style="width: 300px;" />
+      <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="120px">
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="roleForm.name" size="mini" style="width: 300px;" />
         </el-form-item>
         <el-form-item label="启用">
-          <el-switch
-            v-model="switchValue"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-          >/>
+          <el-switch v-model="roleForm.state" :active-value="1" :inactive-value="0" active-color="#13ce66">/>
           </el-switch></el-form-item>
-        <el-form-item label="角色描述">
-          <el-input size="mini" style="width: 300px;" type="textarea" :rows="3" />
+        <el-form-item label="角色描述" prop="description">
+          <el-input v-model="roleForm.description" size="mini" style="width: 300px;" type="textarea" :rows="3" />
         </el-form-item>
         <el-form-item>
           <el-row type="flex" justify="center">
@@ -71,12 +67,24 @@ export default {
     return {
       list: [],
       showDialog: true,
-      switchValue: false,
       // 分页信息
       pageParams: {
         page: 1,
         pagesize: 5,
         total: 0
+      },
+      roleForm: { // 新增角色表单数据
+        name: '',
+        description: '',
+        state: 0 // switch开关，1开启，0关闭
+      },
+      rules: {
+        name: [
+          { required: true, message: '角色名称不能为空', trigger: 'blur' }
+        ],
+        description: [
+          { required: true, message: '角色描述不能为空', trigger: 'blur' }
+        ]
       }
     }
   },
