@@ -28,14 +28,16 @@
           <template v-slot="{ row }">
             <!-- 编辑状态 -->
             <template v-if="row.isEdit">
-              <el-button type="primary" size="mini">确定</el-button>
+              <el-button type="primary" size="mini" @click="btnEditOK(row)">确定</el-button>
               <el-button size="mini" @click="row.isEdit=false">取消</el-button>
             </template>
             <!-- 非编辑状态 -->
             <template v-else>
               <el-button type="text" size="mini">分配权限</el-button>
               <el-button type="text" size="mini" @click="btnEditRow(row)">编辑</el-button>
-              <el-button type="text" size="mini">删除</el-button>
+              <el-popconfirm title="是否要删除该角色" @onConfirm="confirmDel(row.id)">
+                <el-button slot="reference" type="text" style="margin-left: 10px;" size="mini">删除</el-button>
+              </el-popconfirm>
             </template>
           </template>
         </el-table-column>
@@ -78,7 +80,7 @@
   </div>
 </template>
 <script>
-import { getRoleList, addRole } from '@/api/role'
+import { getRoleList, addRole, updateRole, delRole } from '@/api/role'
 
 export default {
   name: 'Role',
@@ -111,6 +113,7 @@ export default {
     this.getRoleList()
   },
   methods: {
+    // 获取角色列表数据
     async getRoleList() {
       const res = await getRoleList(this.pageParams)
       // console.log(res)
@@ -175,6 +178,29 @@ export default {
       row.eidtRow.name = row.name
       row.eidtRow.state = row.state
       row.eidtRow.description = row.description
+    },
+    // 编辑行点击确定
+    async btnEditOK(row) {
+      // console.log(row)
+      if (row.eidtRow.name && row.eidtRow.description) {
+        // 校验通过,调用修改角色接口
+        await updateRole({ ...row.eidtRow, id: row.id })
+        this.$message.success('角色更新成功')
+        Object.assign(row, {
+          ...row.eidtRow,
+          isEdit: false
+        })
+      } else {
+        this.$message.warning('角色名称和描述不能为空')
+      }
+    },
+    // 删除角色
+    async confirmDel(id) {
+      await delRole(id)
+      this.$message.success('删除角色成功')
+      // 判断当前删除的数据是否是最后一页的最后一条数据
+      if (this.list.length === 1) this.pageParams.page--
+      this.getRoleList()
     }
   }
 }
