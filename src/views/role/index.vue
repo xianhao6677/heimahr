@@ -34,13 +34,13 @@
       </el-row>
     </div>
     <!-- 添加角色弹层 -->
-    <el-dialog title="新增角色" :visible.sync="showDialog">
+    <el-dialog title="新增角色" :visible.sync="showDialog" @close="btnCancel">
       <!-- 表单内容 -->
       <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="120px">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="roleForm.name" size="mini" style="width: 300px;" />
         </el-form-item>
-        <el-form-item label="启用">
+        <el-form-item label="启用" prop="state">
           <el-switch v-model="roleForm.state" :active-value="1" :inactive-value="0" active-color="#13ce66">/>
           </el-switch></el-form-item>
         <el-form-item label="角色描述" prop="description">
@@ -49,8 +49,8 @@
         <el-form-item>
           <el-row type="flex" justify="center">
             <el-col :span="12">
-              <el-button type="primary" size="small">确定</el-button>
-              <el-button size="small">取消</el-button>
+              <el-button type="primary" size="small" @click="btnOK">确定</el-button>
+              <el-button size="small" @click="btnCancel">取消</el-button>
             </el-col>
           </el-row>
         </el-form-item>
@@ -59,7 +59,7 @@
   </div>
 </template>
 <script>
-import { getRoleList } from '@/api/role'
+import { getRoleList, addRole } from '@/api/role'
 
 export default {
   name: 'Role',
@@ -119,6 +119,20 @@ export default {
       // console.log(e)
       this.pageParams.page = newPage
       this.getRoleList()
+    },
+    btnOK() {
+      this.$refs.roleForm.validate(async isOK => {
+        if (isOK) {
+          await addRole(this.roleForm)
+          this.$message.success('新增角色成功')
+          this.getRoleList()
+          this.btnCancel()
+        }
+      })
+    },
+    btnCancel() {
+      this.$refs.roleForm.resetFields() // 重置表单
+      this.showDialog = false // 关闭弹层
     }
   }
 }
