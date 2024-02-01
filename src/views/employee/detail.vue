@@ -99,6 +99,7 @@
 </template>
 
 <script>
+import { addEmployee } from '@/api/employee'
 import selectTree from './components/select-tree.vue'
 
 export default {
@@ -147,7 +148,13 @@ export default {
   },
   methods: {
     saveData() {
-      this.$refs.userForm.validate()
+      this.$refs.userForm.validate(async isOK => {
+        if (isOK) { // 表单整体校验通过
+          await addEmployee(this.userInfo)
+          this.$message.success('新增员工成功')
+          this.$router.push('/employee')
+        }
+      })
     }
   }
 }

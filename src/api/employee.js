@@ -40,3 +40,11 @@ export const delEmployee = (id) => {
     method: 'delete'
   })
 }
+//  新增员工
+export const addEmployee = (data) => {
+  return request({
+    url: '/sys/user',
+    method: 'post',
+    data
+  })
+}
