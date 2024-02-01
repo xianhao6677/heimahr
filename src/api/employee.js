@@ -15,3 +15,11 @@ export const exportEmployee = () => {
     responseType: 'blob' // 返回的是二进制文件流格式的数据，使用blob接收
   })
 }
+
+// 批量-下载导入员工模板
+export const getExportTemplate = () => {
+  return request({
+    url: '/sys/user/import/template',
+    responseType: 'blob'
+  })
+}

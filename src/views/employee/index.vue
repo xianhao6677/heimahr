@@ -81,7 +81,7 @@
 import { getDepartment } from '@/api/department'
 import { transListToTreeData } from '@/utils'
 import { exportEmployee, getEmployeeList } from '@/api/employee'
-import fileSaver from 'file-saver'
+import FileSaver from 'file-saver'
 import importExcel from './components/import-excel.vue'
 
 export default {
@@ -175,8 +175,8 @@ export default {
       const res = await exportEmployee()
       // console.log(res)
       // 通过file-saver第三方包，下载返回的blob二进制文件流数据
-      // fileSaver.saveAs(blob对象，文件名称)
-      fileSaver.saveAs(res, '员工信息表.xlsx')
+      // FileSaver.saveAs(blob对象，文件名称)
+      FileSaver.saveAs(res, '员工信息表.xlsx')
     }
   }
 }
