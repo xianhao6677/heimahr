@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import { addEmployee } from '@/api/employee'
+import { addEmployee, getEmployeeDetail } from '@/api/employee'
 import selectTree from './components/select-tree.vue'
 
 export default {
@@ -146,6 +146,11 @@ export default {
       }
     }
   },
+  created() {
+    // console.log(this.$route.params.id)
+    // if (this.$route.params.id) { getEmployeeDetail() }
+    this.$route.params.id && this.getEmployeeDetail()
+  },
   methods: {
     saveData() {
       this.$refs.userForm.validate(async isOK => {
@@ -155,6 +160,9 @@ export default {
           this.$router.push('/employee')
         }
       })
+    },
+    async getEmployeeDetail() {
+      this.userInfo = await getEmployeeDetail(this.$route.params.id)
     }
   }
 }

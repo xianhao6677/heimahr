@@ -40,7 +40,7 @@ export default {
     // 监听级联选中项的id变化
     changeValue(list) {
       // console.log(list[list.length - 1])
-      if (list.length) {
+      if (list.length > 0) {
         const id = list[list.length - 1] // 取出级联选中项的最后一项(最后一级的id)
         this.$emit('input', id) // 将id传给父组件
       } else {
