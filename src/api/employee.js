@@ -23,3 +23,20 @@ export const getExportTemplate = () => {
     responseType: 'blob'
   })
 }
+
+// 批量-导入员工(上传excel)
+export const uploadExcel = (data) => {
+  return request({
+    url: '/sys/user/import',
+    method: 'post',
+    data
+  })
+}
+
+// 删除员工信息
+export const delEmployee = (id) => {
+  return request({
+    url: `/sys/user/${id}`,
+    method: 'delete'
+  })
+}

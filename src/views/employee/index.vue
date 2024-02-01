@@ -51,10 +51,12 @@
           <el-table-column label="部门" prop="departmentName" />
           <el-table-column label="入职时间" prop="timeOfEntry" sortable />
           <el-table-column label="操作" width="280px">
-            <template>
+            <template v-slot="{ row }">
               <el-button size="mini" type="text">查看</el-button>
               <el-button size="mini" type="text">角色</el-button>
-              <el-button size="mini" type="text">删除</el-button>
+              <el-popconfirm title="是否要删除该角色" @onConfirm="confirmDel(row.id)">
+                <el-button slot="reference" type="text" style="margin-left: 10px;" size="mini">删除</el-button>
+              </el-popconfirm>
             </template>
           </el-table-column>
         </el-table>
@@ -73,14 +75,14 @@
       </div>
     </div>
     <!-- 放置导入excel组件 -->
-    <importExcel :show-excel-dialog.sync="showExcelDialog" />
+    <importExcel :show-excel-dialog.sync="showExcelDialog" @uploadSuccess="getEmployeeList" />
   </div>
 </template>
 
 <script>
 import { getDepartment } from '@/api/department'
 import { transListToTreeData } from '@/utils'
-import { exportEmployee, getEmployeeList } from '@/api/employee'
+import { delEmployee, exportEmployee, getEmployeeList } from '@/api/employee'
 import FileSaver from 'file-saver'
 import importExcel from './components/import-excel.vue'
 
@@ -177,6 +179,13 @@ export default {
       // 通过file-saver第三方包，下载返回的blob二进制文件流数据
       // FileSaver.saveAs(blob对象，文件名称)
       FileSaver.saveAs(res, '员工信息表.xlsx')
+    },
+    // 删除员工信息
+    async confirmDel(id) {
+      await delEmployee(id)
+      if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
+      this.getEmployeeList()
+      this.$message.success('删除成功')
     }
   }
 }
