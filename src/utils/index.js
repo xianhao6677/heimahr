@@ -127,8 +127,11 @@ export const transListToTreeData = (list, rootValue) => {
       // 已知返回的数据中，每个当前节点的id 与 子节点的pid 相等
       // 继续遍历数组，寻找子节点的再下一级节点
       const children = transListToTreeData(list, item.id)
-      // 将子节点赋值给当前节点的chileren属性，用于树形结构识别分级
-      item.children = children
+      // 判断只有存在下级时才赋值
+      if (children.length) {
+        // 将子节点赋值给当前节点的chileren属性，用于树形结构识别分级
+        item.children = children
+      }
     }
   })
   return arr
