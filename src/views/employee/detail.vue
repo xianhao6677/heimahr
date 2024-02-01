@@ -27,6 +27,7 @@
               <el-form-item label="手机" prop="mobile">
                 <el-input
                   v-model="userInfo.mobile"
+                  :disabled="!!$route.params.id"
                   size="mini"
                   class="inputW"
                 />
@@ -99,7 +100,7 @@
 </template>
 
 <script>
-import { addEmployee, getEmployeeDetail } from '@/api/employee'
+import { addEmployee, updateEmployee, getEmployeeDetail } from '@/api/employee'
 import selectTree from './components/select-tree.vue'
 
 export default {
@@ -152,15 +153,25 @@ export default {
     this.$route.params.id && this.getEmployeeDetail()
   },
   methods: {
+    // 保存更新员工基本信息
     saveData() {
       this.$refs.userForm.validate(async isOK => {
-        if (isOK) { // 表单整体校验通过
-          await addEmployee(this.userInfo)
-          this.$message.success('新增员工成功')
+        if (isOK) {
+          // 表单整体校验通过
+          if (this.$route.params.id) {
+            // 页面有路由参数(id) -> 修改/编辑员工详情模式
+            await updateEmployee(this.userInfo)
+            this.$message.success('更新员工信息成功')
+          } else {
+            // 页面没有路由参数(id) -> 新增员工详情模式
+            await addEmployee(this.userInfo)
+            this.$message.success('新增员工成功')
+          }
           this.$router.push('/employee')
         }
       })
     },
+    // 根据路由参数(id)获取员工基本详情并回显
     async getEmployeeDetail() {
       this.userInfo = await getEmployeeDetail(this.$route.params.id)
     }

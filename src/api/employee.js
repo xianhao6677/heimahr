@@ -55,3 +55,12 @@ export const getEmployeeDetail = (id) => {
     url: `/sys/user/${id}`
   })
 }
+
+// 修改-员工-基本信息
+export const updateEmployee = (data) => {
+  return request({
+    url: `/sys/user/${data.id}`,
+    method: 'put',
+    data
+  })
+}
