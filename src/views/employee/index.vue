@@ -222,8 +222,6 @@ export default {
       await assignRole({ roleIds: this.roleIds, id: this.currentId })
       this.$message.success('角色分配成功')
       this.showRoleDialog = false
-      // 重新获取页面数据
-      this.getDepartment()
     }
   }
 }
