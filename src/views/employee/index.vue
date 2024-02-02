@@ -57,7 +57,7 @@
                 type="text"
                 @click="$router.push(`/employee/detail/${row.id}`)"
               >查看</el-button>
-              <el-button size="mini" type="text">角色</el-button>
+              <el-button size="mini" type="text" @click="btnRole">角色</el-button>
               <el-popconfirm title="是否要删除该角色" @onConfirm="confirmDel(row.id)">
                 <el-button slot="reference" type="text" style="margin-left: 10px;" size="mini">删除</el-button>
               </el-popconfirm>
@@ -80,13 +80,19 @@
     </div>
     <!-- 放置导入excel组件 -->
     <importExcel :show-excel-dialog.sync="showExcelDialog" @uploadSuccess="getEmployeeList" />
+    <el-dialog :visible.sync="showRoleDialog" title="分配角色">
+      <el-checkbox-group v-model="roleIds">
+        <el-checkbox v-for="item in roleList" :key="item.id" :label="item.id">
+          {{ item.name }}</el-checkbox>
+      </el-checkbox-group>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getDepartment } from '@/api/department'
 import { transListToTreeData } from '@/utils'
-import { delEmployee, exportEmployee, getEmployeeList } from '@/api/employee'
+import { delEmployee, exportEmployee, getEmployeeList, getEnableRoleList } from '@/api/employee'
 import FileSaver from 'file-saver'
 import importExcel from './components/import-excel.vue'
 
@@ -110,7 +116,10 @@ export default {
       },
       list: [], // 员工列表数据
       total: 0, // 员工列表总条数
-      showExcelDialog: false // 控制excel弹层显示/隐藏
+      showExcelDialog: false, // 控制excel弹层显示/隐藏
+      showRoleDialog: false, // 控制角色弹层显示/隐藏
+      roleList: [], // 角色列表
+      roleIds: [] // 用于双向绑定el-checkbox-group，存储选中项的值
     }
   },
   created() {
@@ -190,6 +199,11 @@ export default {
       if (this.list.length === 1 && this.queryParams.page > 1) this.queryParams.page--
       this.getEmployeeList()
       this.$message.success('删除成功')
+    },
+    // 点击角色按钮弹层
+    async btnRole() {
+      this.showRoleDialog = true
+      this.roleList = await getEnableRoleList()
     }
   }
 }
