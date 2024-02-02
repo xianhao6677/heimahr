@@ -57,7 +57,7 @@
                 type="text"
                 @click="$router.push(`/employee/detail/${row.id}`)"
               >查看</el-button>
-              <el-button size="mini" type="text" @click="btnRole">角色</el-button>
+              <el-button size="mini" type="text" @click="btnRole(row.id)">角色</el-button>
               <el-popconfirm title="是否要删除该角色" @onConfirm="confirmDel(row.id)">
                 <el-button slot="reference" type="text" style="margin-left: 10px;" size="mini">删除</el-button>
               </el-popconfirm>
@@ -83,8 +83,15 @@
     <el-dialog :visible.sync="showRoleDialog" title="分配角色">
       <el-checkbox-group v-model="roleIds">
         <el-checkbox v-for="item in roleList" :key="item.id" :label="item.id">
-          {{ item.name }}</el-checkbox>
+          {{ item.name }}
+        </el-checkbox>
       </el-checkbox-group>
+      <el-row slot="footer" type="flex" justify="center">
+        <el-col :span="6">
+          <el-button type="primary" size="mini" @click="btnRoleOK">确定</el-button>
+          <el-button size="mini" @click="showRoleDialog=false">取消</el-button>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
@@ -92,7 +99,7 @@
 <script>
 import { getDepartment } from '@/api/department'
 import { transListToTreeData } from '@/utils'
-import { delEmployee, exportEmployee, getEmployeeList, getEnableRoleList } from '@/api/employee'
+import { assignRole, delEmployee, exportEmployee, getEmployeeDetail, getEmployeeList, getEnableRoleList } from '@/api/employee'
 import FileSaver from 'file-saver'
 import importExcel from './components/import-excel.vue'
 
@@ -119,7 +126,8 @@ export default {
       showExcelDialog: false, // 控制excel弹层显示/隐藏
       showRoleDialog: false, // 控制角色弹层显示/隐藏
       roleList: [], // 角色列表
-      roleIds: [] // 用于双向绑定el-checkbox-group，存储选中项的值
+      roleIds: [], // 用于双向绑定el-checkbox-group，存储选中项的值
+      currentId: null // 记录当前点击项的id，用于分配员工角色接口传参
     }
   },
   created() {
@@ -201,9 +209,21 @@ export default {
       this.$message.success('删除成功')
     },
     // 点击角色按钮弹层
-    async btnRole() {
-      this.showRoleDialog = true
+    async btnRole(id) {
       this.roleList = await getEnableRoleList()
+      // 获取员工详细信息，别解构出 角色集合
+      const { roleIds } = await getEmployeeDetail(id)
+      this.currentId = id
+      this.roleIds = roleIds
+      this.showRoleDialog = true // 显示弹层
+    },
+    // 点击角色弹层的确定，分配员工权限
+    async btnRoleOK() {
+      await assignRole({ roleIds: this.roleIds, id: this.currentId })
+      this.$message.success('角色分配成功')
+      this.showRoleDialog = false
+      // 重新获取页面数据
+      this.getDepartment()
     }
   }
 }
