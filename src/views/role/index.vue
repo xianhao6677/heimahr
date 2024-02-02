@@ -33,7 +33,7 @@
             </template>
             <!-- 非编辑状态 -->
             <template v-else>
-              <el-button type="text" size="mini" @click="btnPermission">分配权限</el-button>
+              <el-button type="text" size="mini" @click="btnPermission(row.id)">分配权限</el-button>
               <el-button type="text" size="mini" @click="btnEditRow(row)">编辑</el-button>
               <el-popconfirm title="是否要删除该角色" @onConfirm="confirmDel(row.id)">
                 <el-button slot="reference" type="text" style="margin-left: 10px;" size="mini">删除</el-button>
@@ -79,13 +79,20 @@
     </el-dialog>
     <!-- 分配角色弹层 -->
     <el-dialog :visible.sync="showPermissionDialog" title="分配权限">
-      <el-tree :data="permissionData" :props="{ label: 'name' }" show-checkbox default-expand-all />
+      <el-tree
+        :data="permissionData"
+        :props="{ label: 'name' }"
+        show-checkbox
+        default-expand-all
+        node-key="id"
+        :default-checked-keys="permIds"
+      />
     </el-dialog>
   </div>
 </template>
 <script>
 import { getPermissionList } from '@/api/permission'
-import { getRoleList, addRole, updateRole, delRole } from '@/api/role'
+import { getRoleList, addRole, updateRole, delRole, getRoleDetail } from '@/api/role'
 import { transListToTreeData } from '@/utils'
 
 export default {
@@ -114,7 +121,9 @@ export default {
         ]
       },
       showPermissionDialog: false, // 分配权限弹层显示/隐藏
-      permissionData: []
+      permissionData: [], // 绑定分配权限弹层树形解构的数据
+      currentRoleId: null, // 记录当前点击项角色id
+      permIds: [] // 当前点击项对应的角色所拥有的权限合集
     }
   },
   created() {
@@ -211,10 +220,15 @@ export default {
       this.getRoleList()
     },
     // 点击 分配角色 显示弹层
-    async btnPermission() {
+    async btnPermission(id) {
       this.showPermissionDialog = true
+      this.currentRoleId = id
+      // 获取权限列表，用于树形解构展示
       const res = await getPermissionList()
       this.permissionData = transListToTreeData(res, 0)
+      // 获取当前所选项的角色详细权限信息，并解构出关联的权限集合
+      const { permIds } = await getRoleDetail(id)
+      this.permIds = permIds
     }
   }
 }
