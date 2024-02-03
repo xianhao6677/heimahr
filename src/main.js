@@ -35,6 +35,21 @@ Vue.use(ElementUI)
 
 Vue.config.productionTip = false
 
+// 自定义指令，根据用户信息里面的权限点，控制权限功能
+Vue.directive('permission', {
+  inserted(el, binding) {
+    // el是当前指令作用的dom元素的对象
+    // binding是dom元素中 v-permission="表达式" 绑定的值
+    console.log(el, binding)
+    const points = store.state.user.userInfo?.roles?.points || [] // 确保points是数组形式
+    // 拿到points，判断是否有该元素所绑定的值
+    if (!points.includes(binding.value)) {
+      el.remove() // 移除该元素(按钮)
+      // el.disabled = true // 禁用该元素(按钮)
+    }
+  }
+})
+
 new Vue({
   el: '#app',
   router,
