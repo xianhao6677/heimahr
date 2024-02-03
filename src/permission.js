@@ -25,13 +25,13 @@ router.beforeEach(async(to, from, next) => {
       // 先判断是否获取过用户资料
       if (!store.getters.userId) {
         // 获取当前登录用户个人信息，并解构出该用户所拥有的权限点集合
-        const { roles: { menus }} = await store.dispatch('user/getUserInfo')
+        const { roles } = await store.dispatch('user/getUserInfo')
         // console.log(menus)
         // console.log(asyncRoutes)
         // // 根据该用户的权限点集合，通过 动态路由列表 筛选出 可以访问的页面路由
         const filterRoutes = asyncRoutes.filter(item => {
           // console.log(item.path.slice(1))
-          return menus.includes(item.path.slice(1))
+          return roles.menus.includes(item.path.slice(1))
         })
         // console.log(filterRoutes)
         // 添加动态路由信息到 store 的路由列表
