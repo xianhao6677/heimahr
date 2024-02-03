@@ -217,7 +217,7 @@ export default {
       this.roleIds = roleIds
       this.showRoleDialog = true // 显示弹层
     },
-    // 点击角色弹层的确定，分配员工权限
+    // 点击角色弹层的确定，分配员工角色
     async btnRoleOK() {
       await assignRole({ roleIds: this.roleIds, id: this.currentId })
       this.$message.success('角色分配成功')

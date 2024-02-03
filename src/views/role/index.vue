@@ -80,19 +80,27 @@
     <!-- 分配角色弹层 -->
     <el-dialog :visible.sync="showPermissionDialog" title="分配权限">
       <el-tree
+        ref="permTree"
         :data="permissionData"
         :props="{ label: 'name' }"
         show-checkbox
         default-expand-all
+        check-strictly
         node-key="id"
         :default-checked-keys="permIds"
       />
+      <el-row slot="footer" type="flex" justify="center">
+        <el-col :span="6">
+          <el-button size="mini" type="primary" @click="btnPermissionOK">确定</el-button>
+          <el-button size="mini" @click="showPermissionDialog=false">取消</el-button>
+        </el-col>
+      </el-row>
     </el-dialog>
   </div>
 </template>
 <script>
 import { getPermissionList } from '@/api/permission'
-import { getRoleList, addRole, updateRole, delRole, getRoleDetail } from '@/api/role'
+import { getRoleList, addRole, updateRole, delRole, getRoleDetail, assignPerm } from '@/api/role'
 import { transListToTreeData } from '@/utils'
 
 export default {
@@ -219,16 +227,26 @@ export default {
       if (this.list.length === 1) this.pageParams.page--
       this.getRoleList()
     },
-    // 点击 分配角色 显示弹层
+    // 点击 分配权限 显示弹层
     async btnPermission(id) {
-      this.showPermissionDialog = true
-      this.currentRoleId = id
+      this.currentRoleId = id // 记录当前点击项 id
       // 获取权限列表，用于树形解构展示
       const res = await getPermissionList()
       this.permissionData = transListToTreeData(res, 0)
       // 获取当前所选项的角色详细权限信息，并解构出关联的权限集合
       const { permIds } = await getRoleDetail(id)
       this.permIds = permIds
+      this.showPermissionDialog = true // 关闭弹层
+    },
+    // 点击确定调用分配权限接口
+    async btnPermissionOK() {
+      await assignPerm({
+        id: this.currentRoleId,
+        // 通过树形组件实例内部 getCheckedKeys()方法 获取当前已被选中的节点所组成的数组
+        permIds: this.$refs.permTree.getCheckedKeys()
+      })
+      this.$message.success('权限分配成功')
+      this.showPermissionDialog = false // 关闭弹层
     }
   }
 }
