@@ -38,6 +38,7 @@ import Layout from '@/layout'
  * a base page that does not have permission requirements
  * all roles can be accessed
  */
+// 导出静态路由 -> 所有用户均可访问的页面
 export const constantRoutes = [
   {
     path: '/login',
@@ -62,6 +63,12 @@ export const constantRoutes = [
       meta: { title: '首页', icon: 'dashboard' }
     }]
   },
+  // 404 page must be placed at the end !!!
+  { path: '*', redirect: '/404', hidden: true }
+]
+
+// 导出动态路由 -> 需要有对应权限才能访问的页面
+export const asyncRoutes = [
   approvalRouter,
   attendanceRouter,
   departmentRouter,
@@ -69,10 +76,7 @@ export const constantRoutes = [
   permissionRouter,
   roleRouter,
   salaryRouter,
-  socialRouter,
-
-  // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  socialRouter
 ]
 
 const createRouter = () => new Router({
