@@ -1,9 +1,11 @@
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import { getUserInfo, login } from '@/api/user'
+import { constantRoutes } from '@/router'
 
 const state = {
   token: getToken(),
-  userInfo: {}
+  userInfo: {},
+  routes: constantRoutes // 默认初始值为静态路由
 }
 
 const mutations = {
@@ -20,6 +22,9 @@ const mutations = {
   // 设置用户基本资料
   setUserInfo(state, userInfo) {
     state.userInfo = userInfo
+  },
+  setRoutes(state, newRoutes) {
+    state.routes = [...constantRoutes, ...newRoutes] // 静态路由 + 动态路由
   }
 }
 

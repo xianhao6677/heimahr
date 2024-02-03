@@ -1,6 +1,6 @@
 import layout from '@/layout'
 export default {
-  // name: 'approval',
+  name: 'approval',
   path: '/approval',
   component: layout,
   children: [{
