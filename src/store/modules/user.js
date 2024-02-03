@@ -37,6 +37,7 @@ const actions = {
     const res = await getUserInfo()
     // console.log(res)
     context.commit('setUserInfo', res)
+    return res // 返回数据
   },
   // 退出登录清空信息
   logout(context) {

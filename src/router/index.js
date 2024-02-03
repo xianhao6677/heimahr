@@ -62,9 +62,10 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: '首页', icon: 'dashboard' }
     }]
-  },
+  }
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // 此处404页面在导航守卫 permission.js 页面动态添加到所有路由的最后
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 // 导出动态路由 -> 需要有对应权限才能访问的页面
@@ -82,7 +83,7 @@ export const asyncRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes // 默认引入静态路由
 })
 
 const router = createRouter()

@@ -2,6 +2,7 @@ import router from '@/router'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 import store from './store'
+import { asyncRoutes } from '@/router'
 
 // 无需token即可访问的白名单地址
 const whiteList = ['/login', '/404']
@@ -23,9 +24,24 @@ router.beforeEach(async(to, from, next) => {
       // 此次路由行为并非跳转到登陆页
       // 先判断是否获取过用户资料
       if (!store.getters.userId) {
-        await store.dispatch('user/getUserInfo')
+        // 获取当前登录用户个人信息，并解构出该用户所拥有的权限点集合
+        const { roles: { menus }} = await store.dispatch('user/getUserInfo')
+        // console.log(menus)
+        // console.log(asyncRoutes)
+        // // 根据该用户的权限点集合，通过 动态路由列表 筛选出 可以访问的页面路由
+        const filterRoutes = asyncRoutes.filter(item => {
+          // console.log(item.path.slice(1))
+          return menus.includes(item.path.slice(1))
+        })
+        // console.log(filterRoutes)
+        // 添加动态路由信息到路由列表，404页面添加到数组的最后一项
+        router.addRoutes([...filterRoutes, { path: '*', redirect: '/404', hidden: true }])
+        // router添加动态路由后，需要转发一下
+        // next(to.path) // 让路由拥有添加的路由信息，router的已知缺陷
+        next()
+      } else {
+        next() // 路由放行
       }
-      next() // 路由放行
     }
   } else { // 没有token
     if (whiteList.includes(to.path)) {
