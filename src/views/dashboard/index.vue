@@ -219,7 +219,7 @@ export default {
   },
   watch: {
     homeData() {
-      console.log(this.homeData)
+      // console.log(this.homeData)
       this.social.setOption({
         xAxis: {
           type: 'category',
