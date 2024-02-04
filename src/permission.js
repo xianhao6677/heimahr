@@ -37,10 +37,10 @@ router.beforeEach(async(to, from, next) => {
         // 添加动态路由信息到 store 的路由列表
         store.commit('user/setRoutes', filterRoutes)
         // 404页面添加到数组的最后一项
-        router.addRoutes([...filterRoutes, { path: '*', redirect: '/404', hidden: true }])
+        // router.addRoutes([...filterRoutes, { path: '*', redirect: '/404', hidden: true }])
+        router.addRoutes([...store.getters.routes, { path: '*', redirect: '/404', hidden: true }])
         // router添加动态路由后，需要转发一下
-        // next(to.path) // 让路由拥有添加的路由信息，router的已知缺陷
-        next()
+        next(to.path) // 让路由拥有添加的路由信息，router的已知缺陷
       } else {
         next() // 路由放行
       }
