@@ -3,7 +3,8 @@ import request from '@/utils/request'
 export function getApprovalList(data) {
   return request({
     url: `/user/process/instance/${data.page}/${data.pageSize}`,
-    method: 'put',
+    // method: 'put',
+    method: 'get',
     data
   })
 }

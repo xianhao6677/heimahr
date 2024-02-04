@@ -81,27 +81,27 @@ export function leaveSave(data) {
   })
 }
 // 请假获取
-export function getLeave(data) {
+export function getLeave(params) {
   return request({
     url: '/cfg/leave/list',
     method: 'post',
-    data
+    params
   })
 }
 // 扣款设置保存
-export function deductionsSave(data) {
+export function deductionsSave(params) {
   return request({
     url: '/cfg/deduction',
     method: 'put',
-    data
+    params
   })
 }
 // 获取扣款设置
-export function getDeductions(data) {
+export function getDeductions(params) {
   return request({
     url: '/cfg/ded/list',
     method: 'post',
-    data
+    params
   })
 }
 
@@ -115,11 +115,11 @@ export function overtimeSave(data) {
 }
 
 // 获取加班配置
-export function getOvertime(data) {
+export function getOvertime(params) {
   return request({
     url: '/cfg/extDuty/item',
     method: 'post',
-    data
+    params
   })
 }
 // 考勤数据保存
@@ -131,11 +131,13 @@ export function attendanceSave(data) {
   })
 }
 // 考勤数据保存
-export function getAttendance(data) {
+export function getAttendance(params) {
   return request({
+    // url: '/cfg/atte/item',
+    // method: 'post',
+    // data
     url: '/cfg/atte/item',
-    method: 'post',
-    data
+    params
   })
 }
 export function fileUpdate(data) {
