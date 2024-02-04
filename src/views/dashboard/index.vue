@@ -172,7 +172,18 @@
         <div class="panel">
           <div class="panel-title">通知公告</div>
           <div class="information-list">
-            <div class="information-list-item">
+            <div v-for="(item,index) in list" :key="index" class="information-list-item">
+              <img :src="item.icon" alt="">
+              <div>
+                <p>{{ item.notice }}</p>
+                <p>{{ item.createTime }}</p>
+                <!-- <p>
+                  <span class="col">{{ item.notice.split(' ')[0] }}</span> {{ item.notice.split(' ')[1] }}
+                  {{ item.notice.split(' ')[2] }}
+                </p> -->
+              </div>
+            </div>
+            <!-- <div class="information-list-item">
               <img src="@/assets/common/img.jpeg" alt="">
               <div>
                 <p>
@@ -191,17 +202,7 @@
                 </p>
                 <p>2018-07-21 15:21:38</p>
               </div>
-            </div>
-            <div class="information-list-item">
-              <img src="@/assets/common/img.jpeg" alt="">
-              <div>
-                <p>
-                  <span class="col">朱继柳</span> 发布了
-                  第1期“传智大讲堂”互动讨论获奖名单公布
-                </p>
-                <p>2018-07-21 15:21:38</p>
-              </div>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -210,7 +211,7 @@
 </template>
 
 <script>
-import { getHomeData } from '@/api/home'
+import { getHomeData, getMessageList } from '@/api/home'
 import CountTo from 'vue-count-to'
 import { mapGetters } from 'vuex'
 
@@ -220,7 +221,8 @@ export default {
   },
   data() {
     return {
-      homeData: {} // 存放首页数据的对象
+      homeData: {}, // 首页-数据
+      list: [] // 首页-消息通知
     }
   },
   computed: {
@@ -228,10 +230,16 @@ export default {
   },
   created() {
     this.getHomeData()
+    this.getMessageList()
   },
   methods: {
+    // 首页-数据展示
     async getHomeData() {
       this.homeData = await getHomeData()
+    },
+    // 首页-消息通知
+    async getMessageList() {
+      this.list = await getMessageList()
     }
   }
 }
