@@ -196,7 +196,13 @@
 import { getHomeData, getMessageList } from '@/api/home'
 import CountTo from 'vue-count-to'
 import { mapGetters } from 'vuex'
-import * as echarts from 'echarts'
+// import * as echarts from 'echarts' // 引入所有的echarts，体积大，消耗性能
+// echarts按需引入
+import * as echarts from 'echarts/core' // 引入echarts核心包
+import { LineChart } from 'echarts/charts' // 引入所需图标类型 -> 此处为折线图
+import { GridComponent } from 'echarts/components' // 引入所需组件 -> 此处为直角坐标系
+import { CanvasRenderer } from 'echarts/renderers' // 引入CanvasRenderer 或者 SVGRenderer渲染器
+echarts.use([LineChart, GridComponent, CanvasRenderer]) // 注册上面引入的组件
 
 export default {
   components: {
